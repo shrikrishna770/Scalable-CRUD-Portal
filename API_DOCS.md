@@ -1,6 +1,7 @@
 # NoteX API Documentation
 
-Base URL: `http://localhost:5000/api`
+- **Local**: `http://localhost:5000/api`
+- **Production**: `https://scalable-crud-portal-1.onrender.com/api`
 
 ## Authentication
 

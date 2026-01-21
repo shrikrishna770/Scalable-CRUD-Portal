@@ -112,5 +112,5 @@ app.delete('/api/notes/:id', (req, res) => {
     res.json({ message: 'Note deleted' });
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Mock server running on port ${PORT}`));

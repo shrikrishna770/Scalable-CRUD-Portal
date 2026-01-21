@@ -13,12 +13,23 @@ const notes = [];
 // Auth Routes
 app.post('/api/auth/signup', (req, res) => {
     const { name, email, password } = req.body;
-    if (users.find(u => u.email === email)) {
-        return res.status(400).json({ message: 'User already exists' });
+    console.log(`[Signup Attempt] name: ${name}, email: ${email}`);
+
+    if (!name || !email || !password) {
+        console.error('[Signup Failed] Missing fields');
+        return res.status(400).json({ message: 'All fields are required' });
     }
+
+    if (users.find(u => u.email === email)) {
+        console.warn(`[Signup Failed] User already exists: ${email}`);
+        return res.status(400).json({ message: 'User already exists. Please login instead.' });
+    }
+
     const user = { id: Math.random().toString(36).substr(2, 9), name, email };
     users.push({ ...user, password });
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1d' });
+
+    console.log(`[Signup Success] Created user: ${email}`);
     res.status(201).json({ token, user });
 });
 

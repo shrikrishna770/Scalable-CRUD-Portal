@@ -16,7 +16,7 @@ app.post('/api/auth/signup', (req, res) => {
     console.log(`[Signup Attempt] name: ${name}, email: ${email}`);
 
     if (!name || !email || !password) {
-        console.error('[Signup Failed] Missing fields');
+        console.error(`[Signup Failed] Missing fields: ${JSON.stringify({ name: !!name, email: !!email, password: !!password })}`);
         return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -29,7 +29,7 @@ app.post('/api/auth/signup', (req, res) => {
     users.push({ ...user, password });
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1d' });
 
-    console.log(`[Signup Success] Created user: ${email}`);
+    console.log(`[Signup Success] Created user: ${email} (Total users: ${users.length})`);
     res.status(201).json({ token, user });
 });
 

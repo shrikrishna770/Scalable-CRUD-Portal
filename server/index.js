@@ -17,9 +17,34 @@ app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 
 // Database Connection
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
+const connectDB = async () => {
+    try {
+        let uri = process.env.MONGODB_URI;
+
+        if (!uri || uri.includes('localhost')) {
+            try {
+                // Attempt to check if local MongoDB is up, if not, use memory server
+                await mongoose.connect(uri, { serverSelectionTimeoutMS: 2000 });
+                console.log('Connected to local MongoDB');
+            } catch (err) {
+                console.log('Local MongoDB not found, starting In-Memory MongoDB...');
+                const { MongoMemoryServer } = require('mongodb-memory-server');
+                const mongod = await MongoMemoryServer.create();
+                uri = mongod.getUri();
+                await mongoose.connect(uri);
+                console.log('Connected to In-Memory MongoDB');
+            }
+        } else {
+            await mongoose.connect(uri);
+            console.log('Connected to MongoDB Atlas');
+        }
+    } catch (err) {
+        console.error('MongoDB connection error:', err);
+        process.exit(1);
+    }
+};
+
+connectDB();
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -42,7 +42,16 @@ export default function SignupPage() {
             const res = await api.post('/auth/signup', signupData);
             login(res.data.token, res.data.user);
         } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+            if (!err.response) {
+                setError('Server unreachable. Please ensure the backend is running.');
+            } else {
+                const message = err.response?.data?.message || 'Registration failed. Please try again.';
+                if (message.includes('buffering timed out')) {
+                    setError('Database connection error. Please ensure MongoDB is running or active.');
+                } else {
+                    setError(message);
+                }
+            }
         } finally {
             setIsLoading(false);
         }

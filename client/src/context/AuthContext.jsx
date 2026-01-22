@@ -24,8 +24,10 @@ export function AuthProvider({ children }) {
                     setUser(res.data);
                 } catch (err) {
                     console.error('Failed to fetch profile', err);
-                    Cookies.remove('token');
-                    setUser(null);
+                    if (err.response?.status === 401) {
+                        Cookies.remove('token');
+                        setUser(null);
+                    }
                 }
             }
             setLoading(false);
